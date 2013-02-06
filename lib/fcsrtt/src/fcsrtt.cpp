@@ -37,6 +37,10 @@ bool Fcsrtt::parseFile(const char *filename)
 	std::string value;
 	char lastVector = '\0';
 	int number;
+	Fcsrtt_testDay testDay;
+	Fcsrtt_mouse mouse;
+	int nValues;
+	float values[11];
 
 
 		/* Open file */
@@ -74,37 +78,78 @@ bool Fcsrtt::parseFile(const char *filename)
 		if (key.compare("Start Date") == 0)
 		{
 			std::cout << "Start Date: " << value << std::endl;
+			testDay.dateStart = value;
 			lastVector = '\0';
 		}
 		else if (key.compare("End Date") == 0)
 		{
 			std::cout << "End Date: " << value << std::endl;
+			testDay.dateEnd = value;
 			lastVector = '\0';
 		}
 		else if (key.compare("Subject") == 0)
 		{
 			std::cout << "Subject: " << value << std::endl;
+			mouse.id = atoi(value.c_str());
 			lastVector = '\0';
 		}
 		else if (key.compare("Start Time") == 0)
 		{
 			std::cout << "Start Time: " << value << std::endl;
+			testDay.session[session].timeStart = value;
 			lastVector = '\0';
 		}
 		else if (key.compare("End Time") == 0)
 		{
 			std::cout << "End Time: " << value << std::endl;
+			testDay.session[session].timeEnd = value;
 			lastVector = '\0';
 		}
 		else if (key.compare("C") == 0)
 		{
-			std::cout << "C: " << value << std::endl;
 			lastVector = 'C';
 		}
 		else if (this->getNumber(key, number))
 		{
-			if (lastVector != '\0')
-				std::cout << value << std::endl;
+			if (lastVector == 'C')
+			{
+				// Save data in the vector
+				nValues = this->extractValues(value, values, 11);
+
+				//std::cout << value << std::endl;
+				//std::cout << "Offset: " << number << "  Size: " << nValues << std::endl;
+
+				if (number + nValues > FCSRTT_TOTAL)
+				{
+					std::cout << "Wrong number of values" << std::endl;
+					file.close();
+					return false;
+				}
+
+				memcpy(
+					&testDay.session[session].params[number],
+					values, nValues * sizeof(float));
+
+				if (number + nValues == FCSRTT_TOTAL)
+				{
+					// Print data
+					std::cout << "C: ";
+					for (int i = 0; i < FCSRTT_TOTAL - 1; i++)
+						std::cout << testDay.session[session].params[i] << " ";
+					std::cout << testDay.session[session].params[FCSRTT_TOTAL - 1] << std::endl;
+
+					// Move to next session
+					session++;
+
+					// Move to next experiment
+					if (session == 3)
+					{
+						session = 0;
+
+						// TODO
+					}
+				}
+			}
 		}
 		else
 		{
@@ -112,8 +157,6 @@ bool Fcsrtt::parseFile(const char *filename)
 			lastVector = '\0';
 		}
 	}
-
-	// TODO
 
 /*
 File: C:\MED-PC IV\DATA\!2013-01-22_16h36m.Subject 2733
@@ -152,7 +195,7 @@ C:
 
 bool Fcsrtt::getNumber(std::string &line, int &number)
 {
-	for (int i = 0; i < line.size(); i++)
+	for (unsigned int i = 0; i < line.size(); i++)
 	{
 		if (line[i] != ' ' && line[i] != '\t' &&
 			(line[i] < '0' || line[i] > '9'))
@@ -163,4 +206,40 @@ bool Fcsrtt::getNumber(std::string &line, int &number)
 
 	number = atoi(line.c_str());
 	return true;
+}
+
+int Fcsrtt::extractValues(std::string &line, float *values, int size)
+{
+	int nValues = 0;
+	bool insideNumber = false;
+	int posLastNumber = -1;
+
+	for (unsigned int i = 0; i < line.size(); i++)
+	{
+		if (insideNumber)
+		{
+			if (line[i] == ' ')
+			{
+				values[nValues] = (float)atof(line.substr(posLastNumber, line.size()).c_str());
+				nValues++;
+				insideNumber = false;
+			}
+		}
+		else
+		{
+			if (line[i] != ' ')
+			{
+				posLastNumber = i;
+				insideNumber = true;
+			}
+		}
+	}
+
+	if (insideNumber)
+	{
+		values[nValues] = (float)atof(line.substr(posLastNumber, line.size()).c_str());
+		nValues++;
+	}
+
+	return nValues;
 }

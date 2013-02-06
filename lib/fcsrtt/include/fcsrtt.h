@@ -10,6 +10,7 @@
 #include <list>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 /*
@@ -30,7 +31,7 @@
 #define FCSRTT_P_INCORRECT		11	// Percentage of incorrect trials
 #define FCSRTT_P_OMISSIONS		12	// Percentage of omissions
 #define FCSRTT_P_ACCURACY		13	// Percentage of accuracy
-#define FCSRTT_TOTAL			14
+#define FCSRTT_TOTAL			15
 
 
 /*
@@ -83,6 +84,7 @@ public:
 
 private:
 	bool getNumber(std::string &line, int &number);
+	int extractValues(std::string &line, float *values, int size);
 };
 
 #endif	/* FCSRTT_H_ */
