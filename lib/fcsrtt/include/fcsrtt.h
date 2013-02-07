@@ -11,14 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
 
 /*
  * DEFINES
  */
 
-#define FCSRTT_N_CORRECT		0	// Number of correct trials
-#define FCSRTT_N_INCORRECT		1	// Number of incorrect trials
+#define FCSRTT_N_CORRECT		0	// Number of correct responses
+#define FCSRTT_N_INCORRECT		1	// Number of incorrect responses
 #define FCSRTT_N_OMISSIONS		2	// Number of omissions
 #define FCSRTT_N_PREMATURE		3	// Number of premature responses
 #define FCSRTT_N_PERSEVERANT	4	// Number of perseverant responses
@@ -31,7 +32,8 @@
 #define FCSRTT_P_INCORRECT		11	// Percentage of incorrect trials
 #define FCSRTT_P_OMISSIONS		12	// Percentage of omissions
 #define FCSRTT_P_ACCURACY		13	// Percentage of accuracy
-#define FCSRTT_TOTAL			15
+#define FCSRTT_TOTAL_TRIALS		14	// Total trials run
+#define FCSRTT_SIZE				15	// Param vector size
 
 
 /*
@@ -48,7 +50,7 @@ typedef struct
 {
 	std::string timeStart;
 	std::string timeEnd;
-	float params[FCSRTT_TOTAL];
+	float params[FCSRTT_SIZE];
 }Fcsrtt_session;
 
 typedef struct
@@ -82,9 +84,12 @@ public:
 	bool parseFolder(const char *path);
 	bool parseFile(const char *filename);
 
+	void print();
+
 private:
 	bool getNumber(std::string &line, int &number);
 	int extractValues(std::string &line, float *values, int size);
+	Fcsrtt_experiment *lookForMouse(int id);
 };
 
 #endif	/* FCSRTT_H_ */

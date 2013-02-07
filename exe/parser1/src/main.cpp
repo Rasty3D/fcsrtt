@@ -17,11 +17,14 @@ int main(int argc, char *argv[])
 	}
 
 	// Parse one single file
-	if (!fcsrtt.parseFile(argv[1]))
+	if (!fcsrtt.parseFolder(argv[1]))
 	{
 		std::cout << "Error parsing file" << std::endl;
 		return 0;
 	}
+
+	// Print results
+	fcsrtt.print();
 
 	// Return ok
 	return 0;
