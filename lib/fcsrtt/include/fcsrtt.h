@@ -85,6 +85,8 @@ public:
 	bool parseFile(const char *filename);
 
 	void print();
+	bool saveByParam(const char *filename);
+	void saveByParam(int paramId, std::ofstream &file);
 
 private:
 	bool getNumber(std::string &line, int &number);

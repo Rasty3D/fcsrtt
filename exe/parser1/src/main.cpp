@@ -26,6 +26,10 @@ int main(int argc, char *argv[])
 	// Print results
 	fcsrtt.print();
 
+	// Save params
+	if (argc >= 3)
+		fcsrtt.saveByParam(argv[2]);
+
 	// Return ok
 	return 0;
 }

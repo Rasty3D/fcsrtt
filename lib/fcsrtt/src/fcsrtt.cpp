@@ -202,6 +202,7 @@ bool Fcsrtt::parseFile(const char *filename)
 						}
 						else
 						{
+							testDay.daySeq = experiment->tests.size() + 1;
 							experiment->tests.push_back(testDay);
 						}
 					}
@@ -260,6 +261,79 @@ void Fcsrtt::print()
 				std::cout << (*itDay).session[s].params[FCSRTT_SIZE - 1] << std::endl;
 			}
 		}
+	}
+}
+
+bool Fcsrtt::saveByParam(const char *filename)
+{
+		/* Open file */
+
+	std::ofstream file;
+	file.open(filename);
+
+	if (!file)
+	{
+		std::cout << "Error writing file" << std::endl;
+		return false;
+	}
+
+
+		/* Get max day sequence */
+
+	unsigned int maxDaySequence = 0;
+
+	for (std::list<Fcsrtt_experiment>::iterator it = this->experiments.begin();
+		 it != this->experiments.end(); it++)
+	{
+		if ((*it).tests.size() > maxDaySequence)
+			maxDaySequence = (*it).tests.size();
+	}
+
+
+		/* Print parameters */
+
+	for (int i = 0; i < FCSRTT_SIZE; i++)
+	{
+		// Print parameter name
+		file << "Parameter " << i << std::endl;
+
+		// Print header
+		file << "Mouse ";
+
+		for (unsigned int day = 0; day < maxDaySequence - 1; day++)
+			file << "s1 s2 s3 ";
+		file << "s1 s2 s3" << std::endl;
+
+		// Print parameter
+		this->saveByParam(i, file);
+	}
+
+
+		/* Close file */
+
+	file.close();
+
+
+		/* Exit */
+
+	return true;
+}
+
+void Fcsrtt::saveByParam(int paramId, std::ofstream &file)
+{
+	for (std::list<Fcsrtt_experiment>::iterator it = this->experiments.begin();
+		 it != this->experiments.end(); it++)
+	{
+		file << (*it).mouse.id << " ";
+
+		for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
+			 itDay != (*it).tests.end(); itDay++)
+		{
+			for (int s = 0; s < 3; s++)
+				file << (*itDay).session[s].params[paramId] << " ";
+		}
+
+		file << std::endl;
 	}
 }
 
