@@ -403,11 +403,11 @@ bool Fcsrtt::checkData()
 		{
 			// Check the start time of the three sessions
 			if ((*itDay).session[0].timeStart.compare(
-					(*itDay).session[0].timeStart) ||
+					(*itDay).session[0].timeStart) != 0 ||
 				(*itDay).session[0].timeStart.compare(
-					(*itDay).session[1].timeStart) ||
+					(*itDay).session[1].timeStart) != 0 ||
 				(*itDay).session[1].timeStart.compare(
-					(*itDay).session[2].timeStart))
+					(*itDay).session[2].timeStart) != 0)
 				dataCorrect = false;
 		}
 	}
