@@ -21,26 +21,19 @@ Fcsrtt::~Fcsrtt()
 
 bool Fcsrtt::parseFolder(const char *path)
 {
+	// Variables
 	DIR *dir = opendir(path);
 	struct dirent *ent;
 	std::string filename;
+	std::list<std::string> filenames;
 
+	// Get list of files
 	if (dir)
 	{
 		while ((ent = readdir(dir)) != NULL)
 		{
 			if (ent->d_type == DT_REG)
-			{
-				filename = path;
-				if (path[strlen(path) - 1] != '/')
-					filename += "/";
-				filename += ent->d_name;
-
-				std::cout << "Processing [" << filename << "]" << std::endl;
-
-				if (!parseFile(filename.c_str()))
-					std::cout << "  Error. Skiping file" << std::endl;
-			}
+				filenames.push_back(ent->d_name);
 		}
 
 		closedir(dir);
@@ -50,6 +43,25 @@ bool Fcsrtt::parseFolder(const char *path)
 		std::cout << "Error reading the engines folder" << std::endl;
 	}
 
+	// Sort filenames
+	filenames.sort();
+
+	// Parse files
+	for (std::list<std::string>::iterator it = filenames.begin();
+		 it != filenames.end(); it++)
+	{
+		filename = path;
+		if (path[strlen(path) - 1] != '/')
+			filename += "/";
+		filename += (*it);
+
+		std::cout << "Processing [" << filename << "]" << std::endl;
+
+		if (!parseFile(filename.c_str()))
+			std::cout << "  Error. Skiping file" << std::endl;
+	}
+
+	// Return ok
 	return true;
 }
 
@@ -264,7 +276,7 @@ void Fcsrtt::print()
 	}
 }
 
-bool Fcsrtt::saveByParam(const char *filename)
+bool Fcsrtt::saveByParam(const char *filename, bool verbose)
 {
 		/* Open file */
 
@@ -298,14 +310,14 @@ bool Fcsrtt::saveByParam(const char *filename)
 		file << "Parameter " << i << std::endl;
 
 		// Print header
-		file << "Mouse ";
+		file << "Mouse,";
 
 		for (unsigned int day = 0; day < maxDaySequence - 1; day++)
-			file << "s1 s2 s3 ";
-		file << "s1 s2 s3" << std::endl;
+			file << "s1,s2,s3,";
+		file << "s1,s2,s3" << std::endl;
 
 		// Print parameter
-		this->saveByParam(i, file);
+		this->saveByParam(i, file, verbose);
 	}
 
 
@@ -319,22 +331,88 @@ bool Fcsrtt::saveByParam(const char *filename)
 	return true;
 }
 
-void Fcsrtt::saveByParam(int paramId, std::ofstream &file)
+void Fcsrtt::saveByParam(int paramId, std::ofstream &file, bool verbose)
 {
 	for (std::list<Fcsrtt_experiment>::iterator it = this->experiments.begin();
 		 it != this->experiments.end(); it++)
 	{
-		file << (*it).mouse.id << " ";
+		if (verbose)
+		{
+			// Date start
+			file << "Date start,";
+			for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
+				 itDay != (*it).tests.end(); itDay++)
+			{
+				for (int s = 0; s < 3; s++)
+					file << (*itDay).dateStart << ",";
+			}
+			file << std::endl;
 
+			// Date end
+			file << "Date end,";
+			for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
+				 itDay != (*it).tests.end(); itDay++)
+			{
+				for (int s = 0; s < 3; s++)
+					file << (*itDay).dateEnd << ",";
+			}
+			file << std::endl;
+
+			// Time start
+			file << "Time start,";
+			for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
+				 itDay != (*it).tests.end(); itDay++)
+			{
+				for (int s = 0; s < 3; s++)
+					file << (*itDay).session[s].timeStart << ",";
+			}
+			file << std::endl;
+
+			// Time end
+			file << "Time end,";
+			for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
+				 itDay != (*it).tests.end(); itDay++)
+			{
+				for (int s = 0; s < 3; s++)
+					file << (*itDay).session[s].timeEnd << ",";
+			}
+			file << std::endl;
+		}
+
+		// Params
+		file << (*it).mouse.id << ",";
 		for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
 			 itDay != (*it).tests.end(); itDay++)
 		{
 			for (int s = 0; s < 3; s++)
-				file << (*itDay).session[s].params[paramId] << " ";
+				file << (*itDay).session[s].params[paramId] << ",";
 		}
-
 		file << std::endl;
 	}
+}
+
+bool Fcsrtt::checkData()
+{
+	bool dataCorrect = true;
+
+	for (std::list<Fcsrtt_experiment>::iterator it = this->experiments.begin();
+		 it != this->experiments.end(); it++)
+	{
+		for (std::list<Fcsrtt_testDay>::iterator itDay = (*it).tests.begin();
+			 itDay != (*it).tests.end(); itDay++)
+		{
+			// Check the start time of the three sessions
+			if ((*itDay).session[0].timeStart.compare(
+					(*itDay).session[0].timeStart) ||
+				(*itDay).session[0].timeStart.compare(
+					(*itDay).session[1].timeStart) ||
+				(*itDay).session[1].timeStart.compare(
+					(*itDay).session[2].timeStart))
+				dataCorrect = false;
+		}
+	}
+
+	return dataCorrect;
 }
 
 bool Fcsrtt::getNumber(std::string &line, int &number)

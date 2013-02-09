@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
 	// Check arguments
 	if (argc < 2)
 	{
-		std::cout << "Introduce the file to parse" << std::endl;
+		std::cout << "Sintax:" << std::endl;
+		std::cout << "  parser <input folder> <output file> <output verbose file>" << std::endl;
 		return 0;
 	}
 
@@ -24,11 +25,22 @@ int main(int argc, char *argv[])
 	}
 
 	// Print results
-	fcsrtt.print();
+	//fcsrtt.print();
+
+	// Check data
+	if (!fcsrtt.checkData())
+	{
+		std::cout << "Warning: error checking data. The output file might be wrong" << std::endl;
+		std::cout << "Please check the verbose output file and verify the data" << std::endl;
+	}
 
 	// Save params
 	if (argc >= 3)
 		fcsrtt.saveByParam(argv[2]);
+
+	// Save verbose results
+	if (argc >= 4)
+		fcsrtt.saveByParam(argv[3], true);
 
 	// Return ok
 	return 0;
