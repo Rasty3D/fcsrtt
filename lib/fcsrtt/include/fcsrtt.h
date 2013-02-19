@@ -33,7 +33,12 @@
 #define FCSRTT_P_OMISSIONS		12	// Percentage of omissions
 #define FCSRTT_P_ACCURACY		13	// Percentage of accuracy
 #define FCSRTT_TOTAL_TRIALS		14	// Total trials run
-#define FCSRTT_SIZE				15	// Param vector size
+#define FCSRTT_SIZE_C			15	// Param C vector size
+
+#define FCSRTT_SIZE_D			15	// Param D vector size
+
+#define FCSRTT_PARAMS_GROUP_C	0
+#define FCSRTT_PARAMS_GROUP_D	1
 
 
 /*
@@ -50,7 +55,8 @@ typedef struct
 {
 	std::string timeStart;
 	std::string timeEnd;
-	float params[FCSRTT_SIZE];
+	float paramsC[FCSRTT_SIZE_C];
+	float paramsD[FCSRTT_SIZE_D];
 }Fcsrtt_session;
 
 typedef struct
@@ -86,7 +92,9 @@ public:
 
 	void print();
 	bool saveByParam(const char *filename, bool verbose = false);
-	void saveByParam(int paramId, std::ofstream &file, bool verbose = false);
+	void saveByParam(
+		int paramGroup, int paramId,
+		std::ofstream &file, bool verbose = false);
 
 	bool checkData();
 

@@ -71,7 +71,7 @@ bool Fcsrtt::parseFile(const char *filename)
 
 	std::ifstream file;
 	std::string line;
-	int session = 0;
+	int session = -1;
 	size_t posColon;
 	std::string key;
 	std::string value;
@@ -122,6 +122,27 @@ bool Fcsrtt::parseFile(const char *filename)
 
 		if (key.compare("Start Date") == 0)
 		{
+			// Move to next session
+			session++;
+
+			// Move to next experiment
+			if (session == 3)
+			{
+				session = 0;
+
+				if (experiment == NULL)
+				{
+					std::cout << "Something went wrong, the experiment shouldn't be NULL" << std::endl;
+					file.close();
+					return false;
+				}
+				else
+				{
+					testDay.daySeq = experiment->tests.size() + 1;
+					experiment->tests.push_back(testDay);
+				}
+			}
+
 			//std::cout << "Start Date: " << value << std::endl;
 			testDay.dateStart = value;
 			lastVector = '\0';
@@ -171,6 +192,10 @@ bool Fcsrtt::parseFile(const char *filename)
 		{
 			lastVector = 'C';
 		}
+		else if (key.compare("D") == 0)
+		{
+			lastVector = 'D';
+		}
 		else if (this->getNumber(key, number))
 		{
 			if (lastVector == 'C')
@@ -178,7 +203,7 @@ bool Fcsrtt::parseFile(const char *filename)
 				// Save data in the vector
 				nValues = this->extractValues(value, values, 11);
 
-				if (number + nValues > FCSRTT_SIZE)
+				if (number + nValues > FCSRTT_SIZE_C)
 				{
 					std::cout << "Wrong number of values" << std::endl;
 					file.close();
@@ -186,39 +211,24 @@ bool Fcsrtt::parseFile(const char *filename)
 				}
 
 				memcpy(
-					&testDay.session[session].params[number],
+					&testDay.session[session].paramsC[number],
 					values, nValues * sizeof(float));
+			}
+			else if (lastVector == 'D')
+			{
+				// Save data in the vector
+				nValues = this->extractValues(value, values, 11);
 
-				if (number + nValues == FCSRTT_SIZE)
+				if (number + nValues > FCSRTT_SIZE_D)
 				{
-					// Print data
-					/*
-					std::cout << "C: ";
-					for (int i = 0; i < FCSRTT_SIZE - 1; i++)
-						std::cout << testDay.session[session].params[i] << " ";
-					std::cout << testDay.session[session].params[FCSRTT_SIZE - 1] << std::endl;*/
-
-					// Move to next session
-					session++;
-
-					// Move to next experiment
-					if (session == 3)
-					{
-						session = 0;
-
-						if (experiment == NULL)
-						{
-							std::cout << "Something went wrong, the experiment shouldn't be NULL" << std::endl;
-							file.close();
-							return false;
-						}
-						else
-						{
-							testDay.daySeq = experiment->tests.size() + 1;
-							experiment->tests.push_back(testDay);
-						}
-					}
+					std::cout << "Wrong number of values" << std::endl;
+					file.close();
+					return false;
 				}
+
+				memcpy(
+					&testDay.session[session].paramsD[number],
+					values, nValues * sizeof(float));
 			}
 		}
 		else
@@ -267,10 +277,15 @@ void Fcsrtt::print()
 				std::cout << " to " << (*itDay).session[s].timeEnd << std::endl;
 
 				// Parameters
-				std::cout << "    Params: ";
-				for (int p = 0; p < FCSRTT_SIZE - 1; p++)
-					std::cout << (*itDay).session[s].params[p] << " ";
-				std::cout << (*itDay).session[s].params[FCSRTT_SIZE - 1] << std::endl;
+				std::cout << "    Params C: ";
+				for (int p = 0; p < FCSRTT_SIZE_C - 1; p++)
+					std::cout << (*itDay).session[s].paramsC[p] << " ";
+				std::cout << (*itDay).session[s].paramsC[FCSRTT_SIZE_C - 1] << std::endl;
+
+				std::cout << "    Params D: ";
+				for (int p = 0; p < FCSRTT_SIZE_D - 1; p++)
+					std::cout << (*itDay).session[s].paramsD[p] << " ";
+				std::cout << (*itDay).session[s].paramsD[FCSRTT_SIZE_D - 1] << std::endl;
 			}
 		}
 	}
@@ -304,10 +319,10 @@ bool Fcsrtt::saveByParam(const char *filename, bool verbose)
 
 		/* Print parameters */
 
-	for (int i = 0; i < FCSRTT_SIZE; i++)
+	for (int i = 0; i < FCSRTT_SIZE_C; i++)
 	{
 		// Print parameter name
-		file << "Parameter " << i << std::endl;
+		file << "Parameter C" << i << std::endl;
 
 		// Print header
 		file << "Mouse,";
@@ -317,7 +332,23 @@ bool Fcsrtt::saveByParam(const char *filename, bool verbose)
 		file << "s1,s2,s3" << std::endl;
 
 		// Print parameter
-		this->saveByParam(i, file, verbose);
+		this->saveByParam(FCSRTT_PARAMS_GROUP_C, i, file, verbose);
+	}
+
+	for (int i = 0; i < FCSRTT_SIZE_D; i++)
+	{
+		// Print parameter name
+		file << "Parameter D" << i << std::endl;
+
+		// Print header
+		file << "Mouse,";
+
+		for (unsigned int day = 0; day < maxDaySequence - 1; day++)
+			file << "s1,s2,s3,";
+		file << "s1,s2,s3" << std::endl;
+
+		// Print parameter
+		this->saveByParam(FCSRTT_PARAMS_GROUP_D, i, file, verbose);
 	}
 
 
@@ -331,7 +362,9 @@ bool Fcsrtt::saveByParam(const char *filename, bool verbose)
 	return true;
 }
 
-void Fcsrtt::saveByParam(int paramId, std::ofstream &file, bool verbose)
+void Fcsrtt::saveByParam(
+	int paramGroup, int paramId,
+	std::ofstream &file, bool verbose)
 {
 	for (std::list<Fcsrtt_experiment>::iterator it = this->experiments.begin();
 		 it != this->experiments.end(); it++)
@@ -385,7 +418,12 @@ void Fcsrtt::saveByParam(int paramId, std::ofstream &file, bool verbose)
 			 itDay != (*it).tests.end(); itDay++)
 		{
 			for (int s = 0; s < 3; s++)
-				file << (*itDay).session[s].params[paramId] << ",";
+			{
+				if (paramGroup == FCSRTT_PARAMS_GROUP_C)
+					file << (*itDay).session[s].paramsC[paramId] << ",";
+				else if (paramGroup == FCSRTT_PARAMS_GROUP_D)
+					file << (*itDay).session[s].paramsD[paramId] << ",";
+			}
 		}
 		file << std::endl;
 	}
