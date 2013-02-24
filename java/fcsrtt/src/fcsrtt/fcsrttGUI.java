@@ -488,7 +488,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
 		else if (key.equals("D")) {
                     lastVector = 'D';
 		}
-		else if ((number = getNumber(value)) != -1) {
+		else if ((number = getNumber(key)) != -1) {
                     if (lastVector == 'C')
                     {
                         // Save data in the vector
@@ -541,6 +541,9 @@ public class fcsrttGUI extends javax.swing.JFrame {
     
     /** Converts a string to a number, but returns -1 if it's not a number */
     private int getNumber(String value) {
+        // We need to fill with '0' the spaces to recognize the numbers
+        value = value.replace(' ', '0');
+        
         try {
             int number = Integer.parseInt(value);
             return number;
@@ -563,7 +566,8 @@ public class fcsrttGUI extends javax.swing.JFrame {
             {
                 if (line.charAt(i) == ' ')
                 {
-                    values[nValues] = Float.parseFloat(line.substring(posLastNumber));
+                    values[nValues] =
+                        Float.parseFloat(line.substring(posLastNumber, i - 1));
                     nValues++;
                     insideNumber = false;
                 }

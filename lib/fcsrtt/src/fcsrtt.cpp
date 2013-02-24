@@ -238,6 +238,22 @@ bool Fcsrtt::parseFile(const char *filename)
 		}
 	}
 
+	// Save last test day
+	if (session == 2)
+	{
+		if (experiment == NULL)
+		{
+			std::cout << "Something went wrong, the experiment shouldn't be NULL" << std::endl;
+			file.close();
+			return false;
+		}
+		else
+		{
+			testDay.daySeq = experiment->tests.size() + 1;
+			experiment->tests.push_back(testDay);
+		}
+	}
+
 
 		/* Close and exit */
 
