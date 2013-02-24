@@ -31,31 +31,31 @@ public class fcsrttGUI extends javax.swing.JFrame {
     private List<Experiment> experiments = new LinkedList<>();
     
     private static final int PARAMS_GROUP_A = 0;
-    private static final int PARAMS_GROUP_B = 0;
-    private static final int PARAMS_GROUP_C = 0;
-    private static final int PARAMS_GROUP_D = 0;
-    private static final int PARAMS_GROUP_E = 0;
-    private static final int PARAMS_GROUP_F = 0;
-    private static final int PARAMS_GROUP_G = 0;
-    private static final int PARAMS_GROUP_H = 0;
-    private static final int PARAMS_GROUP_I = 0;
-    private static final int PARAMS_GROUP_J = 0;
-    private static final int PARAMS_GROUP_K = 0;
-    private static final int PARAMS_GROUP_L = 0;
-    private static final int PARAMS_GROUP_M = 0;
-    private static final int PARAMS_GROUP_N = 0;
-    private static final int PARAMS_GROUP_O = 0;
-    private static final int PARAMS_GROUP_P = 0;
-    private static final int PARAMS_GROUP_Q = 0;
-    private static final int PARAMS_GROUP_R = 0;
-    private static final int PARAMS_GROUP_S = 0;
-    private static final int PARAMS_GROUP_T = 0;
-    private static final int PARAMS_GROUP_U = 0;
-    private static final int PARAMS_GROUP_V = 0;
-    private static final int PARAMS_GROUP_W = 0;
-    private static final int PARAMS_GROUP_X = 0;
-    private static final int PARAMS_GROUP_Y = 0;
-    private static final int PARAMS_GROUP_Z = 0;
+    private static final int PARAMS_GROUP_B = 1;
+    private static final int PARAMS_GROUP_C = 2;
+    private static final int PARAMS_GROUP_D = 3;
+    private static final int PARAMS_GROUP_E = 4;
+    private static final int PARAMS_GROUP_F = 5;
+    private static final int PARAMS_GROUP_G = 6;
+    private static final int PARAMS_GROUP_H = 7;
+    private static final int PARAMS_GROUP_I = 8;
+    private static final int PARAMS_GROUP_J = 9;
+    private static final int PARAMS_GROUP_K = 10;
+    private static final int PARAMS_GROUP_L = 11;
+    private static final int PARAMS_GROUP_M = 12;
+    private static final int PARAMS_GROUP_N = 13;
+    private static final int PARAMS_GROUP_O = 14;
+    private static final int PARAMS_GROUP_P = 15;
+    private static final int PARAMS_GROUP_Q = 16;
+    private static final int PARAMS_GROUP_R = 17;
+    private static final int PARAMS_GROUP_S = 18;
+    private static final int PARAMS_GROUP_T = 19;
+    private static final int PARAMS_GROUP_U = 20;
+    private static final int PARAMS_GROUP_V = 21;
+    private static final int PARAMS_GROUP_W = 22;
+    private static final int PARAMS_GROUP_X = 23;
+    private static final int PARAMS_GROUP_Y = 24;
+    private static final int PARAMS_GROUP_Z = 25;
     
 
     /**
@@ -433,6 +433,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
                         {
                             testDay.daySeq = experiment.tests.size() + 1;
                             experiment.tests.add(testDay);
+                            testDay = new TestDay();
                         }
                     }
 
@@ -531,6 +532,24 @@ public class fcsrttGUI extends javax.swing.JFrame {
             inBuffer.close();
             inReader.close();
             inFile.close();
+            
+            // Save last test day
+            if (session == 2)
+            {
+                if (experiment == null)
+                {
+                    System.out.println("Something went wrong, the experiment shouldn't be NULL");
+                    inBuffer.close();
+                    inReader.close();
+                    inFile.close();
+                    return false;
+                }
+                else
+                {
+                    testDay.daySeq = experiment.tests.size() + 1;
+                    experiment.tests.add(testDay);
+                }
+            }
         } catch(IOException e) {
             System.out.println("Error reading the file");
             return false;
@@ -712,7 +731,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     // Date start
                     outWriter.write("Date start,");
                     tdIt = ex.tests.listIterator();
-
+                    
                     while (tdIt.hasNext()) {
                         td = tdIt.next();
                         for (int s = 0; s < 3; s++) {
