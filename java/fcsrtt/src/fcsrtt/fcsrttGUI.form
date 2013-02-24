@@ -24,27 +24,33 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="l_exportParams" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="t_exportParams" min="-2" pref="274" max="-2" attributes="0"/>
+                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="b_inputFolder" min="-2" pref="130" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="l_inputFolder" pref="248" max="32767" attributes="0"/>
+                      <Component id="l_inputFolder" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="b_process" min="-2" pref="130" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="146" max="-2" attributes="0"/>
+                      <Component id="b_exit" min="-2" pref="130" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="cb_verbose" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="b_outputFile" min="-2" pref="130" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="l_outputFile" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <Component id="cb_verbose" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="b_process" min="-2" pref="130" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="b_exit" min="-2" pref="130" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
@@ -54,24 +60,29 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="b_inputFolder" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                   <Component id="l_inputFolder" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="b_inputFolder" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="b_outputFile" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="l_outputFile" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="cb_verbose" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="211" max="32767" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="b_process" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="b_exit" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
+                  <Component id="l_exportParams" alignment="3" min="-2" pref="26" max="-2" attributes="0"/>
+                  <Component id="t_exportParams" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="b_exit" min="-2" pref="35" max="-2" attributes="0"/>
+                  <Component id="b_process" alignment="0" min="-2" pref="35" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="28" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -80,6 +91,13 @@
     <Component class="javax.swing.JButton" name="b_inputFolder">
       <Properties>
         <Property name="text" type="java.lang.String" value="Input Folder"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click here to select the folder that contains the data"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[86, 26]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[86, 26]"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_inputFolderActionPerformed"/>
@@ -88,6 +106,7 @@
     <Component class="javax.swing.JButton" name="b_outputFile">
       <Properties>
         <Property name="text" type="java.lang.String" value="Output File"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click here to select the file where to write the data"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_outputFileActionPerformed"/>
@@ -96,6 +115,7 @@
     <Component class="javax.swing.JButton" name="b_process">
       <Properties>
         <Property name="text" type="java.lang.String" value="Process"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click here to start processing the data. You must select before the input folder and output file"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_processActionPerformed"/>
@@ -104,25 +124,40 @@
     <Component class="javax.swing.JLabel" name="l_inputFolder">
       <Properties>
         <Property name="text" type="java.lang.String" value="Select Input Folder"/>
+        <Property name="toolTipText" type="java.lang.String" value="No folder selected"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="l_outputFile">
       <Properties>
         <Property name="text" type="java.lang.String" value="Select Output File"/>
+        <Property name="toolTipText" type="java.lang.String" value="No file selected"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="cb_verbose">
       <Properties>
         <Property name="text" type="java.lang.String" value="Verbose Output"/>
+        <Property name="toolTipText" type="java.lang.String" value="Select this if you want verbose information in the output file (dates, times, etc)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="b_exit">
       <Properties>
         <Property name="text" type="java.lang.String" value="Exit"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click here it exit the program"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_exitActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="t_exportParams">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="C,D"/>
+        <Property name="toolTipText" type="java.lang.String" value="Write here the list of params you want to export, separated by commas. For example &quot;C,D&quot;"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="l_exportParams">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Export params"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
