@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,34 @@ public class fcsrttGUI extends javax.swing.JFrame {
     private File outputFile;    //!< Output file
     
     private List<Experiment> experiments = new LinkedList<>();
+    
+    private static final int PARAMS_GROUP_A = 0;
+    private static final int PARAMS_GROUP_B = 0;
+    private static final int PARAMS_GROUP_C = 0;
+    private static final int PARAMS_GROUP_D = 0;
+    private static final int PARAMS_GROUP_E = 0;
+    private static final int PARAMS_GROUP_F = 0;
+    private static final int PARAMS_GROUP_G = 0;
+    private static final int PARAMS_GROUP_H = 0;
+    private static final int PARAMS_GROUP_I = 0;
+    private static final int PARAMS_GROUP_J = 0;
+    private static final int PARAMS_GROUP_K = 0;
+    private static final int PARAMS_GROUP_L = 0;
+    private static final int PARAMS_GROUP_M = 0;
+    private static final int PARAMS_GROUP_N = 0;
+    private static final int PARAMS_GROUP_O = 0;
+    private static final int PARAMS_GROUP_P = 0;
+    private static final int PARAMS_GROUP_Q = 0;
+    private static final int PARAMS_GROUP_R = 0;
+    private static final int PARAMS_GROUP_S = 0;
+    private static final int PARAMS_GROUP_T = 0;
+    private static final int PARAMS_GROUP_U = 0;
+    private static final int PARAMS_GROUP_V = 0;
+    private static final int PARAMS_GROUP_W = 0;
+    private static final int PARAMS_GROUP_X = 0;
+    private static final int PARAMS_GROUP_Y = 0;
+    private static final int PARAMS_GROUP_Z = 0;
+    
 
     /**
      * Creates new form fcsrttGUI
@@ -202,10 +231,10 @@ public class fcsrttGUI extends javax.swing.JFrame {
         
         // Set the default folder
         if (outputFile != null) {
-            fc.setCurrentDirectory(outputFile);
+            fc.setCurrentDirectory(outputFile.getParentFile());
         }
         else if (inputFolder != null) {
-            fc.setCurrentDirectory(inputFolder.getParentFile());
+            fc.setCurrentDirectory(inputFolder);
         }
         else {
             fc.setCurrentDirectory(new File("."));
@@ -277,7 +306,13 @@ public class fcsrttGUI extends javax.swing.JFrame {
         }
         
         // Save data in the file
-        // TODO
+        if (!saveByParam(outputFile, cb_verbose.isSelected())) {
+            JOptionPane.showMessageDialog(
+                fcsrttGUI.this,
+                "Error saving data",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
         // Show success message
         JOptionPane.showMessageDialog(
@@ -552,6 +587,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
         return nValues;
     }
     
+    /** Check the date of the sessions */
     private boolean checkData() {
 	boolean dataCorrect = true;
 
@@ -577,6 +613,173 @@ public class fcsrttGUI extends javax.swing.JFrame {
 
 	return dataCorrect;
     }
+    
+    /** Save the parameters in a CSV file */
+    private boolean saveByParam(File file, boolean verbose)
+    {
+        try {
+                /* Open file */
+            
+            FileOutputStream outFile = new FileOutputStream(file.getAbsolutePath());
+            OutputStreamWriter outWriter = new OutputStreamWriter(outFile);
+            
+
+                /* Get max day sequence */
+
+            int maxDaySequence = 0;
+
+            ListIterator<Experiment> exIt = experiments.listIterator();
+            Experiment ex;
+
+            while (exIt.hasNext()) {
+                ex = exIt.next();
+
+                if (maxDaySequence < ex.tests.size()) {
+                    maxDaySequence = ex.tests.size();
+                }
+            }
+
+
+                /* Print parameters */
+
+            for (int i = 0; i < Session.SIZE_C; i++)
+            {
+                // Print parameter name
+                outWriter.write("Parameter C" + i + "\n");
+
+                // Print header
+                outWriter.write("Mouse,");
+
+                for (int day = 0; day < maxDaySequence - 1; day++) {
+                    outWriter.write("s1,s2,s3,");
+                }
+                outWriter.write("s1,s2,s3\n");
+
+                // Print parameter
+                saveByParam(PARAMS_GROUP_C, i, outWriter, verbose);
+            }
+            
+            for (int i = 0; i < Session.SIZE_D; i++)
+            {
+                // Print parameter name
+                outWriter.write("Parameter D" + i + "\n");
+
+                // Print header
+                outWriter.write("Mouse,");
+
+                for (int day = 0; day < maxDaySequence - 1; day++) {
+                    outWriter.write("s1,s2,s3,");
+                }
+                outWriter.write("s1,s2,s3\n");
+
+                // Print parameter
+                saveByParam(PARAMS_GROUP_D, i, outWriter, verbose);
+            }
+
+                /* Close file */
+
+            outWriter.close();
+            outFile.close();
+        } catch(IOException e) {
+            System.out.println("Error writing the file");
+            return false;
+        }
+
+
+            /* Exit */
+
+        return true;
+    }
+
+    private boolean saveByParam(
+        int paramGroup, int paramId,
+        OutputStreamWriter outWriter, boolean verbose)
+    {
+        ListIterator<Experiment> exIt = experiments.listIterator();
+        Experiment ex;
+        ListIterator<TestDay> tdIt;
+        TestDay td;
+
+        try {
+            while (exIt.hasNext()) {
+                ex = exIt.next();
+
+                if (verbose) {
+                    // Date start
+                    outWriter.write("Date start,");
+                    tdIt = ex.tests.listIterator();
+
+                    while (tdIt.hasNext()) {
+                        td = tdIt.next();
+                        for (int s = 0; s < 3; s++) {
+                            outWriter.write(td.dateStart + ",");
+                        }
+                    }
+                    outWriter.write("\n");
+
+                    // Date end
+                    outWriter.write("Date end,");
+                    tdIt = ex.tests.listIterator();
+
+                    while (tdIt.hasNext()) {
+                        td = tdIt.next();
+                        for (int s = 0; s < 3; s++) {
+                            outWriter.write(td.dateEnd + ",");
+                        }
+                    }
+                    outWriter.write("\n");
+
+                    // Time start
+                    outWriter.write("Time start,");
+                    tdIt = ex.tests.listIterator();
+
+                    while (tdIt.hasNext()) {
+                        td = tdIt.next();
+                        for (int s = 0; s < 3; s++) {
+                            outWriter.write(td.session[s].timeStart + ",");
+                        }
+                    }
+                    outWriter.write("\n");
+
+                    // Time end
+                    outWriter.write("Time end,");
+                    tdIt = ex.tests.listIterator();
+
+                    while (tdIt.hasNext()) {
+                        td = tdIt.next();
+                        for (int s = 0; s < 3; s++) {
+                            outWriter.write(td.session[s].timeEnd + ",");
+                        }
+                    }
+                    outWriter.write("\n");
+                }
+
+                // Params
+                outWriter.write(ex.mouse.id + ",");
+                tdIt = ex.tests.listIterator();
+
+                while (tdIt.hasNext()) {
+                    td = tdIt.next();
+                    
+                    for (int s = 0; s < 3; s++) {
+                        if (paramGroup == PARAMS_GROUP_C) {
+                            outWriter.write(td.session[s].paramsC[paramId] + ",");
+                        } else if (paramGroup == PARAMS_GROUP_D) {
+                            outWriter.write(td.session[s].paramsD[paramId] + ",");
+                        }
+                    }
+                }
+                
+                outWriter.write("\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing param");
+            return false;
+        }
+        
+        return true;
+    }
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton b_exit;
