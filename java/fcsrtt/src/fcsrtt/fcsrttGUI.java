@@ -28,35 +28,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
     private File inputFolder;   //!< Input folder
     private File outputFile;    //!< Output file
     
-    private List<Experiment> experiments = new LinkedList<>();
-    
-    private static final int PARAMS_GROUP_A = 0;
-    private static final int PARAMS_GROUP_B = 1;
-    private static final int PARAMS_GROUP_C = 2;
-    private static final int PARAMS_GROUP_D = 3;
-    private static final int PARAMS_GROUP_E = 4;
-    private static final int PARAMS_GROUP_F = 5;
-    private static final int PARAMS_GROUP_G = 6;
-    private static final int PARAMS_GROUP_H = 7;
-    private static final int PARAMS_GROUP_I = 8;
-    private static final int PARAMS_GROUP_J = 9;
-    private static final int PARAMS_GROUP_K = 10;
-    private static final int PARAMS_GROUP_L = 11;
-    private static final int PARAMS_GROUP_M = 12;
-    private static final int PARAMS_GROUP_N = 13;
-    private static final int PARAMS_GROUP_O = 14;
-    private static final int PARAMS_GROUP_P = 15;
-    private static final int PARAMS_GROUP_Q = 16;
-    private static final int PARAMS_GROUP_R = 17;
-    private static final int PARAMS_GROUP_S = 18;
-    private static final int PARAMS_GROUP_T = 19;
-    private static final int PARAMS_GROUP_U = 20;
-    private static final int PARAMS_GROUP_V = 21;
-    private static final int PARAMS_GROUP_W = 22;
-    private static final int PARAMS_GROUP_X = 23;
-    private static final int PARAMS_GROUP_Y = 24;
-    private static final int PARAMS_GROUP_Z = 25;
-    
+    private List<Experiment> experiments = new LinkedList<>();    
 
     /**
      * Creates new form fcsrttGUI
@@ -81,8 +53,9 @@ public class fcsrttGUI extends javax.swing.JFrame {
         l_outputFile = new javax.swing.JLabel();
         cb_verbose = new javax.swing.JCheckBox();
         b_exit = new javax.swing.JButton();
-        t_exportParams = new javax.swing.JTextField();
-        l_exportParams = new javax.swing.JLabel();
+        l_exportFormat = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        t_exportFormat = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ping's Parser");
@@ -131,10 +104,11 @@ public class fcsrttGUI extends javax.swing.JFrame {
             }
         });
 
-        t_exportParams.setText("C,D");
-        t_exportParams.setToolTipText("Write here the list of params you want to export, separated by commas. For example \"C,D\"");
+        l_exportFormat.setText("Export format");
 
-        l_exportParams.setText("Export params");
+        t_exportFormat.setColumns(20);
+        t_exportFormat.setRows(5);
+        jScrollPane1.setViewportView(t_exportFormat);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -143,26 +117,25 @@ public class fcsrttGUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(l_exportParams, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(t_exportParams, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(b_process, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(b_exit, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(l_exportFormat, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                        .addGap(286, 286, 286))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(b_inputFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(l_inputFolder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(b_process, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(146, 146, 146)
-                        .addComponent(b_exit, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(cb_verbose)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(b_outputFile, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(l_outputFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(l_outputFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(cb_verbose)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
@@ -178,15 +151,15 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     .addComponent(l_outputFile))
                 .addGap(18, 18, 18)
                 .addComponent(cb_verbose)
-                .addGap(18, 18, 18)
+                .addGap(12, 12, 12)
+                .addComponent(l_exportFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(l_exportParams, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(t_exportParams, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(b_exit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(b_process, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(28, Short.MAX_VALUE))
+                    .addComponent(b_process, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(b_exit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27))
         );
 
         pack();
@@ -510,19 +483,15 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     testDay.session[session].timeEnd = value;
                     lastVector = '\0';
 		}
-		else if (key.equals("C")) {
-                    lastVector = 'C';
-		}
-		else if (key.equals("D")) {
-                    lastVector = 'D';
-		}
+                else if (key.length() == 1 && getNumber(key) == -1) {
+                    lastVector = key.charAt(0);
+                }
 		else if ((number = getNumber(key)) != -1) {
-                    if (lastVector == 'C')
-                    {
+                    if (lastVector != '\0') {
                         // Save data in the vector
                         nValues = extractValues(value, values, 11);
 
-                        if (number + nValues > Session.SIZE_C)
+                        if (number + nValues > Session.getSize(lastVector))
                         {
                             System.out.println("Wrong number of values");
                             inBuffer.close();
@@ -531,23 +500,10 @@ public class fcsrttGUI extends javax.swing.JFrame {
                             return false;
                         }
 
-                        System.arraycopy(values, 0, testDay.session[session].paramsC, number, nValues);
-                    }
-                    else if (lastVector == 'D')
-                    {
-                        // Save data in the vector
-                        nValues = extractValues(value, values, 11);
-
-                        if (number + nValues > Session.SIZE_D)
-                        {
-                            System.out.println("Wrong number of values");
-                            inBuffer.close();
-                            inReader.close();
-                            inFile.close();
-                            return false;
+                        for (int i = 0; i < nValues; i++) {
+                            testDay.session[session].setParam(
+                                lastVector, number + i, values[i]);
                         }
-
-                        System.arraycopy(values, 0, testDay.session[session].paramsD, number, nValues);
                     }
 		}
                 else {
@@ -692,7 +648,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
 
                 /* Print parameters */
 
-            for (int i = 0; i < Session.SIZE_C; i++)
+            for (int i = 0; i < Session.getSize('C'); i++)
             {
                 // Print parameter name
                 outWriter.write("Parameter C" + i + "\n");
@@ -706,10 +662,10 @@ public class fcsrttGUI extends javax.swing.JFrame {
                 outWriter.write("s1,s2,s3\n");
 
                 // Print parameter
-                saveByParam(PARAMS_GROUP_C, i, outWriter, verbose);
+                saveByParam('C', i, outWriter, verbose);
             }
             
-            for (int i = 0; i < Session.SIZE_D; i++)
+            for (int i = 0; i < Session.getSize('D'); i++)
             {
                 // Print parameter name
                 outWriter.write("Parameter D" + i + "\n");
@@ -723,7 +679,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
                 outWriter.write("s1,s2,s3\n");
 
                 // Print parameter
-                saveByParam(PARAMS_GROUP_D, i, outWriter, verbose);
+                saveByParam('D', i, outWriter, verbose);
             }
 
                 /* Close file */
@@ -742,13 +698,14 @@ public class fcsrttGUI extends javax.swing.JFrame {
     }
 
     private boolean saveByParam(
-        int paramGroup, int paramId,
+        char paramGroup, int paramId,
         OutputStreamWriter outWriter, boolean verbose)
     {
         ListIterator<Experiment> exIt = experiments.listIterator();
         Experiment ex;
         ListIterator<TestDay> tdIt;
         TestDay td;
+        float paramValue;
 
         try {
             while (exIt.hasNext()) {
@@ -812,11 +769,8 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     td = tdIt.next();
                     
                     for (int s = 0; s < 3; s++) {
-                        if (paramGroup == PARAMS_GROUP_C) {
-                            outWriter.write(td.session[s].paramsC[paramId] + ",");
-                        } else if (paramGroup == PARAMS_GROUP_D) {
-                            outWriter.write(td.session[s].paramsD[paramId] + ",");
-                        }
+                        paramValue = td.session[s].getParam(paramGroup, paramId);
+                        outWriter.write(paramValue + ",");
                     }
                 }
                 
@@ -837,9 +791,10 @@ public class fcsrttGUI extends javax.swing.JFrame {
     private javax.swing.JButton b_outputFile;
     private javax.swing.JButton b_process;
     private javax.swing.JCheckBox cb_verbose;
-    private javax.swing.JLabel l_exportParams;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel l_exportFormat;
     private javax.swing.JLabel l_inputFolder;
     private javax.swing.JLabel l_outputFile;
-    private javax.swing.JTextField t_exportParams;
+    private javax.swing.JTextArea t_exportFormat;
     // End of variables declaration//GEN-END:variables
 }

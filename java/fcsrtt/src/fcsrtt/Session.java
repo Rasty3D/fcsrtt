@@ -9,60 +9,113 @@ package fcsrtt;
  * @author rasty
  */
 public class Session {
-    public static final int SIZE_A = 6;
-    public static final int SIZE_B = 10;
-    public static final int SIZE_C = 15;
-    public static final int SIZE_D = 15;
-    public static final int SIZE_E = 15;
-    public static final int SIZE_F = 8;
-    public static final int SIZE_G = 8;
-    public static final int SIZE_H = 8;
-    public static final int SIZE_I = 1;
-    public static final int SIZE_J = 1;
-    public static final int SIZE_K = 2200;
-    public static final int SIZE_L = 1;
-    public static final int SIZE_M = 6;
-    public static final int SIZE_N = 5;
-    public static final int SIZE_O = 30;
-    public static final int SIZE_P = 1;
-    public static final int SIZE_Q = 1;
-    public static final int SIZE_R = 1;
-    public static final int SIZE_S = 1;
-    public static final int SIZE_T = 1;
-    public static final int SIZE_U = 1;
-    public static final int SIZE_V = 1;
-    public static final int SIZE_W = 4;
-    public static final int SIZE_X = 3;
-    public static final int SIZE_Y = 1;
-    public static final int SIZE_Z = 3;
+    private static int size[] = new int[26];
+    private static int offset[] = new int[26];
+    private float params[];
     
     public String timeStart;
     public String timeEnd;
     
-    public float paramsA[] = new float[Session.SIZE_A];
-    public float paramsB[] = new float[Session.SIZE_B];
-    public float paramsC[] = new float[Session.SIZE_C];
-    public float paramsD[] = new float[Session.SIZE_D];
-    public float paramsE[] = new float[Session.SIZE_E];
-    public float paramsF[] = new float[Session.SIZE_F];
-    public float paramsG[] = new float[Session.SIZE_G];
-    public float paramsH[] = new float[Session.SIZE_H];
-    public float paramsI[] = new float[Session.SIZE_I];
-    public float paramsJ[] = new float[Session.SIZE_J];
-    public float paramsK[] = new float[Session.SIZE_K];
-    public float paramsL[] = new float[Session.SIZE_L];
-    public float paramsM[] = new float[Session.SIZE_M];
-    public float paramsN[] = new float[Session.SIZE_N];
-    public float paramsO[] = new float[Session.SIZE_O];
-    public float paramsP[] = new float[Session.SIZE_P];
-    public float paramsQ[] = new float[Session.SIZE_Q];
-    public float paramsR[] = new float[Session.SIZE_R];
-    public float paramsS[] = new float[Session.SIZE_S];
-    public float paramsT[] = new float[Session.SIZE_T];
-    public float paramsU[] = new float[Session.SIZE_U];
-    public float paramsV[] = new float[Session.SIZE_V];
-    public float paramsW[] = new float[Session.SIZE_W];
-    public float paramsX[] = new float[Session.SIZE_X];
-    public float paramsY[] = new float[Session.SIZE_Y];
-    public float paramsZ[] = new float[Session.SIZE_Z];
+    public Session() {
+        size[0] = 6;
+        size[1] = 10;
+        size[2] = 15;
+        size[3] = 15;
+        size[4] = 15;
+        size[5] = 8;
+        size[6] = 8;
+        size[7] = 8;
+        size[8] = 1;
+        size[9] = 1;
+        size[10] = 2200;
+        size[11] = 1;
+        size[12] = 6;
+        size[13] = 5;
+        size[14] = 30;
+        size[15] = 1;
+        size[16] = 1;
+        size[17] = 1;
+        size[18] = 1;
+        size[19] = 1;
+        size[20] = 1;
+        size[21] = 1;
+        size[22] = 4;
+        size[23] = 3;
+        size[24] = 1;
+        size[25] = 3;
+        
+        offset[0] = 0;
+        
+        for (int i = 1; i < 26; i++) {
+            offset[i] = offset[i - 1] + size[i - 1];
+        }
+        
+        int totalSize = offset[25] + size[25];
+        params = new float[totalSize];
+    }
+    
+    public static int getSize(char group) {
+        if (group < 'A' || group > 'Z') {
+            return -1;
+        }
+        else {
+            return size[group - 'A'];
+        }
+    }
+    
+    public static int getOffset(char group) {
+        if (group < 'A' || group > 'Z') {
+            return -1;
+        }
+        else {
+            return offset[group - 'A'];
+        }
+    }
+    
+    public float getParam(char group, int index) {
+        if (group < 'A' || group > 'Z') {
+            return -1.0f;
+        }
+        else if (index < 0 || index >= size[group - 'A']) {
+            return -1.0f;
+        }
+        else {
+            return params[offset[group - 'A'] + index];
+        }
+    }
+    
+    public boolean getParams(char group, float params[]) {
+        if (group < 'A' || group > 'Z') {
+            return false;
+        }
+        else {
+            System.arraycopy(
+                this.params, offset[group - 'A'], params, 0, size[group - 'A']);
+            return true;
+        }
+    }
+    
+    public boolean setParam(char group, int index, float value) {
+        if (group < 'A' || group > 'Z') {
+            return false;
+        }
+        else if (index < 0 || index >= size[group - 'A']) {
+            return false;
+        }
+        else {
+            params[offset[group - 'A'] + index] = value;
+            return true;
+        }
+    }
+    
+    public boolean setParams(char group, float params[]) {
+        if (group < 'A' || group > 'Z') {
+            return false;
+        }
+        else {
+            System.arraycopy(
+                params, 0, this.params, offset[group - 'A'], size[group - 'A']);
+            return true;
+        }
+    }
 }
