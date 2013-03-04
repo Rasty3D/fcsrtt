@@ -3,6 +3,7 @@ package fcsrtt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -28,7 +31,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
     private File inputFolder;   //!< Input folder
     private File outputFile;    //!< Output file
     
-    private List<Experiment> experiments = new LinkedList<>();    
+    private List<Experiment> experiments = new LinkedList<>();
 
     /**
      * Creates new form fcsrttGUI
@@ -51,7 +54,6 @@ public class fcsrttGUI extends javax.swing.JFrame {
         b_process = new javax.swing.JButton();
         l_inputFolder = new javax.swing.JLabel();
         l_outputFile = new javax.swing.JLabel();
-        cb_verbose = new javax.swing.JCheckBox();
         b_exit = new javax.swing.JButton();
         l_exportFormat = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -93,9 +95,6 @@ public class fcsrttGUI extends javax.swing.JFrame {
         l_outputFile.setText("Select Output File");
         l_outputFile.setToolTipText("No file selected");
 
-        cb_verbose.setText("Verbose Output");
-        cb_verbose.setToolTipText("Select this if you want verbose information in the output file (dates, times, etc)");
-
         b_exit.setText("Exit");
         b_exit.setToolTipText("Click here it exit the program");
         b_exit.addActionListener(new java.awt.event.ActionListener() {
@@ -108,6 +107,8 @@ public class fcsrttGUI extends javax.swing.JFrame {
 
         t_exportFormat.setColumns(20);
         t_exportFormat.setRows(5);
+        t_exportFormat.setText("C0 D0\nC1 D1\nC2 D2\nC3 D3\nC4 D4\nC5 D5\nC6 D6\nC7 D7\nC8 D8\nC9 D9\nC10 D10\nC11 D11\nC12 D12\nC13 D13\nC14 D14");
+        t_exportFormat.setToolTipText("Write here the list of parameters you want to export");
         jScrollPane1.setViewportView(t_exportFormat);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -132,10 +133,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(b_outputFile, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(l_outputFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(cb_verbose)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(l_outputFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
@@ -149,12 +147,10 @@ public class fcsrttGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(b_outputFile, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(l_outputFile))
-                .addGap(18, 18, 18)
-                .addComponent(cb_verbose)
-                .addGap(12, 12, 12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(l_exportFormat, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(b_process, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -305,8 +301,40 @@ public class fcsrttGUI extends javax.swing.JFrame {
                 "Warning", JOptionPane.WARNING_MESSAGE);
         }
         
-        // Save data in the file
-        if (!saveByParam(outputFile, cb_verbose.isSelected())) {
+        // Parse output format
+        List<OutputGroup> outputGroups = new LinkedList<>();        
+        String exportFormat = t_exportFormat.getText();
+        String exportGroups[] = exportFormat.split("\n");
+        
+        for (int i = 0; i < exportGroups.length; i++) {
+            OutputGroup outputGroup = new OutputGroup();
+            outputGroup.clear();
+            
+            String exportGroup[] = exportGroups[i].split(" ");
+            
+            for (int j = 0; j < exportGroup.length; j++) {
+                if (exportGroup[j].length() >= 2) {
+                    char group = exportGroup[j].charAt(0);
+                    int paramId = getNumber(exportGroup[j].substring(1));
+                    outputGroup.add(group, paramId);
+                }
+            }
+            
+            if (!outputGroup.outputParams.isEmpty()) {
+                outputGroups.add(outputGroup);
+            }
+        }
+        
+        if (outputGroups.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                fcsrttGUI.this,
+                "You must specify the output format",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Save groups
+        if (!saveGroups(outputFile, outputGroups)) {
             JOptionPane.showMessageDialog(
                 fcsrttGUI.this,
                 "Error saving data",
@@ -620,23 +648,24 @@ public class fcsrttGUI extends javax.swing.JFrame {
 	return dataCorrect;
     }
     
-    /** Save the parameters in a CSV file */
-    private boolean saveByParam(File file, boolean verbose)
-    {
+    /** Save groups of parameters */
+    private boolean saveGroups(File file, List<OutputGroup> groups) {
+        
+        FileOutputStream outFile = null;
+        OutputStreamWriter outWriter = null;
+        
         try {
                 /* Open file */
             
-            FileOutputStream outFile = new FileOutputStream(file.getAbsolutePath());
-            OutputStreamWriter outWriter = new OutputStreamWriter(outFile);
+            outFile = new FileOutputStream(file.getAbsolutePath());
+            outWriter = new OutputStreamWriter(outFile);
             
-
+            
                 /* Get max day sequence */
 
             int maxDaySequence = 0;
-
             ListIterator<Experiment> exIt = experiments.listIterator();
             Experiment ex;
-
             while (exIt.hasNext()) {
                 ex = exIt.next();
 
@@ -644,124 +673,92 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     maxDaySequence = ex.tests.size();
                 }
             }
-
-
-                /* Print parameters */
-
-            for (int i = 0; i < Session.getSize('C'); i++)
-            {
-                // Print parameter name
-                outWriter.write("Parameter C" + i + "\n");
-
-                // Print header
-                outWriter.write("Mouse,");
-
-                for (int day = 0; day < maxDaySequence - 1; day++) {
-                    outWriter.write("s1,s2,s3,");
+            
+            
+                /* Save each parameter group */
+            
+            ListIterator<OutputGroup> groupIt = groups.listIterator();
+            OutputGroup group;
+            while (groupIt.hasNext()) {
+                group = groupIt.next();
+                if (!saveGroup(outWriter, group, maxDaySequence)) {
+                    return false;
                 }
-                outWriter.write("s1,s2,s3\n");
-
-                // Print parameter
-                saveByParam('C', i, outWriter, verbose);
             }
             
-            for (int i = 0; i < Session.getSize('D'); i++)
-            {
-                // Print parameter name
-                outWriter.write("Parameter D" + i + "\n");
-
-                // Print header
-                outWriter.write("Mouse,");
-
-                for (int day = 0; day < maxDaySequence - 1; day++) {
-                    outWriter.write("s1,s2,s3,");
-                }
-                outWriter.write("s1,s2,s3\n");
-
-                // Print parameter
-                saveByParam('D', i, outWriter, verbose);
-            }
-
-                /* Close file */
-
-            outWriter.close();
-            outFile.close();
-        } catch(IOException e) {
-            System.out.println("Error writing the file");
+        } catch (FileNotFoundException ex) {
             return false;
+        } finally {
+            try {
+                outWriter.close();
+                outFile.close();
+            } catch (IOException ex) {
+                return false;
+            }
         }
-
-
-            /* Exit */
+        
+        
+            /* Return ok */
 
         return true;
     }
-
-    private boolean saveByParam(
-        char paramGroup, int paramId,
-        OutputStreamWriter outWriter, boolean verbose)
-    {
-        ListIterator<Experiment> exIt = experiments.listIterator();
-        Experiment ex;
-        ListIterator<TestDay> tdIt;
-        TestDay td;
-        float paramValue;
-
+    
+    /** Save groups of parameters */
+    private boolean saveGroup(
+        OutputStreamWriter outWriter, OutputGroup group, int maxDaySequence) {
+        
         try {
-            while (exIt.hasNext()) {
-                ex = exIt.next();
+            OutputParam param;
 
-                if (verbose) {
-                    // Date start
-                    outWriter.write("Date start,");
-                    tdIt = ex.tests.listIterator();
-                    
-                    while (tdIt.hasNext()) {
-                        td = tdIt.next();
-                        for (int s = 0; s < 3; s++) {
-                            outWriter.write(td.dateStart + ",");
-                        }
+            // Write header
+            /*
+            outWriter.write("Parameters");
+            for (int i = 0; i < group.outputParams.size(); i++) {
+                param = group.outputParams.get(i);
+                outWriter.write(": " + param.group + param.paramId);
+            }
+            outWriter.write("\n");*/
+
+            // Print header
+            outWriter.write("Mouse,");
+
+            for (int day = 0; day < maxDaySequence; day++) {
+                for (int i = 0; i < group.outputParams.size(); i++) {
+                    param = group.outputParams.get(i);
+                    outWriter.write("s1" + param.group + param.paramId + ",");
+                }
+                
+                for (int i = 0; i < group.outputParams.size(); i++) {
+                    param = group.outputParams.get(i);
+                    outWriter.write("s2" + param.group + param.paramId + ",");
+                }
+                
+                for (int i = 0; i < group.outputParams.size(); i++) {
+                    param = group.outputParams.get(i);
+                    outWriter.write("s3" + param.group + param.paramId);
+                    if (i < group.outputParams.size() - 1) {
+                        outWriter.write(",");
                     }
-                    outWriter.write("\n");
-
-                    // Date end
-                    outWriter.write("Date end,");
-                    tdIt = ex.tests.listIterator();
-
-                    while (tdIt.hasNext()) {
-                        td = tdIt.next();
-                        for (int s = 0; s < 3; s++) {
-                            outWriter.write(td.dateEnd + ",");
-                        }
-                    }
-                    outWriter.write("\n");
-
-                    // Time start
-                    outWriter.write("Time start,");
-                    tdIt = ex.tests.listIterator();
-
-                    while (tdIt.hasNext()) {
-                        td = tdIt.next();
-                        for (int s = 0; s < 3; s++) {
-                            outWriter.write(td.session[s].timeStart + ",");
-                        }
-                    }
-                    outWriter.write("\n");
-
-                    // Time end
-                    outWriter.write("Time end,");
-                    tdIt = ex.tests.listIterator();
-
-                    while (tdIt.hasNext()) {
-                        td = tdIt.next();
-                        for (int s = 0; s < 3; s++) {
-                            outWriter.write(td.session[s].timeEnd + ",");
-                        }
-                    }
+                }
+                
+                if (day == maxDaySequence - 1) {
                     outWriter.write("\n");
                 }
+                else {
+                    outWriter.write(",");
+                }
+            }
 
-                // Params
+            // Print parameter
+            ListIterator<Experiment> exIt = experiments.listIterator();
+            Experiment ex;
+            ListIterator<TestDay> tdIt;
+            TestDay td;
+            float paramValue;
+
+            while (exIt.hasNext()) {
+                ex = exIt.next();
+                
                 outWriter.write(ex.mouse.id + ",");
                 tdIt = ex.tests.listIterator();
 
@@ -769,28 +766,30 @@ public class fcsrttGUI extends javax.swing.JFrame {
                     td = tdIt.next();
                     
                     for (int s = 0; s < 3; s++) {
-                        paramValue = td.session[s].getParam(paramGroup, paramId);
-                        outWriter.write(paramValue + ",");
+                        for (int i = 0; i < group.outputParams.size(); i++) {
+                            param = group.outputParams.get(i);
+                            paramValue = td.session[s].getParam(
+                                param.group, param.paramId);
+                            outWriter.write(paramValue + ",");
+                        }
                     }
                 }
                 
                 outWriter.write("\n");
             }
-        } catch (IOException e) {
-            System.out.println("Error writing param");
+        }
+        catch (IOException ex) {
             return false;
         }
         
         return true;
     }
-
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton b_exit;
     private javax.swing.JButton b_inputFolder;
     private javax.swing.JButton b_outputFile;
     private javax.swing.JButton b_process;
-    private javax.swing.JCheckBox cb_verbose;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel l_exportFormat;
     private javax.swing.JLabel l_inputFolder;

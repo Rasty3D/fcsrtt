@@ -47,10 +47,6 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="l_outputFile" max="32767" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="cb_verbose" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                  </Group>
               </Group>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
           </Group>
@@ -69,12 +65,10 @@
                   <Component id="b_outputFile" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="l_outputFile" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="cb_verbose" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="l_exportFormat" min="-2" pref="26" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="178" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="267" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="b_process" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
@@ -131,12 +125,6 @@
         <Property name="toolTipText" type="java.lang.String" value="No file selected"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="cb_verbose">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Verbose Output"/>
-        <Property name="toolTipText" type="java.lang.String" value="Select this if you want verbose information in the output file (dates, times, etc)"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="b_exit">
       <Properties>
         <Property name="text" type="java.lang.String" value="Exit"/>
@@ -162,6 +150,8 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
+            <Property name="text" type="java.lang.String" value="C0 D0&#xa;C1 D1&#xa;C2 D2&#xa;C3 D3&#xa;C4 D4&#xa;C5 D5&#xa;C6 D6&#xa;C7 D7&#xa;C8 D8&#xa;C9 D9&#xa;C10 D10&#xa;C11 D11&#xa;C12 D12&#xa;C13 D13&#xa;C14 D14"/>
+            <Property name="toolTipText" type="java.lang.String" value="Write here the list of parameters you want to export"/>
           </Properties>
         </Component>
       </SubComponents>
