@@ -4,117 +4,125 @@
  */
 package fcsrtt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author rasty
  */
 public class Session {
-    private static int size[] = new int[26];
-    private static int offset[] = new int[26];
-    private float params[];
+    private static final int SIZE = 26;
+    private int size[] = new int[Session.SIZE];
+    private int offset[] = new int[Session.SIZE];
+    private List<Float> params = new ArrayList<>();
     
     public String timeStart;
     public String timeEnd;
     
     public Session() {
-        size[0] = 6;
-        size[1] = 10;
-        size[2] = 15;
-        size[3] = 15;
-        size[4] = 15;
-        size[5] = 8;
-        size[6] = 8;
-        size[7] = 8;
-        size[8] = 1;
-        size[9] = 1;
-        size[10] = 2200;
-        size[11] = 1;
-        size[12] = 6;
-        size[13] = 5;
-        size[14] = 30;
-        size[15] = 1;
-        size[16] = 1;
-        size[17] = 1;
-        size[18] = 1;
-        size[19] = 1;
-        size[20] = 1;
-        size[21] = 1;
-        size[22] = 4;
-        size[23] = 3;
-        size[24] = 1;
-        size[25] = 3;
-        
-        offset[0] = 0;
-        
-        for (int i = 1; i < 26; i++) {
-            offset[i] = offset[i - 1] + size[i - 1];
+        for (int i = 0; i < SIZE; i++) {
+            size[i] = 0;
+            offset[i] = 0;
         }
         
-        int totalSize = offset[25] + size[25];
-        params = new float[totalSize];
+        params.clear();
     }
     
-    public static int getSize(char group) {
-        if (group < 'A' || group > 'Z') {
+    public int getSize(char group) {
+       int groupIdx = group - 'A';
+        
+        if (groupIdx < 0 || groupIdx >= Session.SIZE) {
             return -1;
         }
         else {
-            return size[group - 'A'];
+            return size[groupIdx];
         }
     }
     
-    public static int getOffset(char group) {
-        if (group < 'A' || group > 'Z') {
+    public int getOffset(char group) {
+        int groupIdx = group - 'A';
+        
+        if (groupIdx < 0 || groupIdx >= Session.SIZE) {
             return -1;
         }
         else {
-            return offset[group - 'A'];
+            return offset[groupIdx];
         }
     }
     
     public float getParam(char group, int index) {
-        if (group < 'A' || group > 'Z') {
+        int groupIdx = group - 'A';
+        
+        if (groupIdx < 0 || groupIdx >= Session.SIZE) {
             return -1.0f;
         }
-        else if (index < 0 || index >= size[group - 'A']) {
+        else if (index < 0 || index >= size[groupIdx]) {
             return -1.0f;
         }
         else {
-            return params[offset[group - 'A'] + index];
+            return params.get(offset[groupIdx] + index);
         }
     }
     
     public boolean getParams(char group, float params[]) {
-        if (group < 'A' || group > 'Z') {
+        int groupIdx = group - 'A';
+        
+        if (groupIdx < 0 || groupIdx >= Session.SIZE) {
             return false;
         }
         else {
             System.arraycopy(
-                this.params, offset[group - 'A'], params, 0, size[group - 'A']);
+                this.params.toArray(), offset[groupIdx],
+                params, 0,
+                size[groupIdx]);
             return true;
         }
     }
     
-    public boolean setParam(char group, int index, float value) {
-        if (group < 'A' || group > 'Z') {
-            return false;
-        }
-        else if (index < 0 || index >= size[group - 'A']) {
+    public boolean setParam(char group, int index, float value) {    
+        int groupIdx = group - 'A';
+        
+        if (groupIdx < 0 || groupIdx >= Session.SIZE) {
             return false;
         }
         else {
-            params[offset[group - 'A'] + index] = value;
+            if (this.offset[groupIdx] == 0) {
+                this.offset[groupIdx] = this.params.size();
+                this.size[groupIdx] = 0;
+            }
+            
+            while (this.params.size() < this.offset[groupIdx] + index + 1) {
+                this.params.add(0.0f);
+            }
+                
+            this.size[groupIdx] = this.params.size() - this.offset[groupIdx];
+            this.params.set(this.offset[groupIdx] + index, value);
             return true;
         }
     }
     
     public boolean setParams(char group, float params[]) {
-        if (group < 'A' || group > 'Z') {
+        int groupIdx = group - 'A';
+        
+        if (groupIdx < 0 || groupIdx >= Session.SIZE) {
             return false;
         }
         else {
+            if (this.offset[groupIdx] == 0) {
+                this.offset[groupIdx] = this.params.size();
+                this.size[groupIdx] = 0;
+            }
+            
+            while (this.params.size() < this.offset[groupIdx] + params.length + 1) {
+                this.params.add(0.0f);
+            }
+                
+            this.size[groupIdx] = this.params.size() - this.offset[groupIdx];
             System.arraycopy(
-                params, 0, this.params, offset[group - 'A'], size[group - 'A']);
+                params, 0,
+                this.params.toArray(), offset[groupIdx],
+                size[groupIdx]);
             return true;
         }
     }

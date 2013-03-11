@@ -519,15 +519,6 @@ public class fcsrttGUI extends javax.swing.JFrame {
                         // Save data in the vector
                         nValues = extractValues(value, values, 11);
 
-                        if (number + nValues > Session.getSize(lastVector))
-                        {
-                            System.out.println("Wrong number of values");
-                            inBuffer.close();
-                            inReader.close();
-                            inFile.close();
-                            return false;
-                        }
-
                         for (int i = 0; i < nValues; i++) {
                             testDay.session[session].setParam(
                                 lastVector, number + i, values[i]);
@@ -709,15 +700,6 @@ public class fcsrttGUI extends javax.swing.JFrame {
         
         try {
             OutputParam param;
-
-            // Write header
-            /*
-            outWriter.write("Parameters");
-            for (int i = 0; i < group.outputParams.size(); i++) {
-                param = group.outputParams.get(i);
-                outWriter.write(": " + param.group + param.paramId);
-            }
-            outWriter.write("\n");*/
 
             // Print header
             outWriter.write("Mouse,");
