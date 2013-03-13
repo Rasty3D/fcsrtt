@@ -12,8 +12,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -277,6 +275,9 @@ public class fcsrttGUI extends javax.swing.JFrame {
         
         // List of errors
         String errorFiles = new String();
+        
+        // Clear experiments
+        experiments.clear();
         
         // Process one file by one
         for (File file : listOfFiles) {
