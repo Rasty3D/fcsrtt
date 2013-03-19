@@ -589,7 +589,7 @@ public class fcsrttGUI extends javax.swing.JFrame {
                 if (line.charAt(i) == ' ')
                 {
                     values[nValues] =
-                        Float.parseFloat(line.substring(posLastNumber, i - 1));
+                        Float.parseFloat(line.substring(posLastNumber, i));
                     nValues++;
                     insideNumber = false;
                 }
